@@ -251,6 +251,89 @@
             },
             {
               "$type": "Models.Functions.LinearInterpolationFunction, Models",
+              "Name": "DepthGDDTarget",
+              "Children": [
+                {
+                  "$type": "Models.Functions.XYPairs, Models",
+                  "X": [
+                    0,
+                    50,
+                    100
+                  ],
+                  "Y": [
+                    100,
+                    160,
+                    300
+                  ],
+                  "Name": "XYPairs",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "IncludeInDocumentation": true,
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Functions.LinearInterpolationFunction, Models",
+              "Name": "DepthLoss",
+              "Children": [
+                {
+                  "$type": "Models.Functions.XYPairs, Models",
+                  "X": [
+                    0,
+                    25,
+                    50,
+                    75
+                  ],
+                  "Y": [
+                    0,
+                    0,
+                    0.03,
+                    0.06
+                  ],
+                  "Name": "XYPairs",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "IncludeInDocumentation": true,
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Functions.LinearInterpolationFunction, Models",
+              "Name": "TemperatureLoss",
+              "Children": [
+                {
+                  "$type": "Models.Functions.XYPairs, Models",
+                  "X": [
+                      5,
+                      10,
+                      35
+                  ],
+                  "Y": [
+                    0.5,
+                    0.03,
+                    0.03
+                  ],
+                  "Name": "XYPairs",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "IncludeInDocumentation": true,
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Functions.LinearInterpolationFunction, Models",
               "Name": "VegetativePhotoperiodModifier",
               "Children": [
                 {
@@ -488,6 +571,14 @@
             },
             {
               "$type": "Models.PMF.Phen.EmergingPhase, Models",
+<<<<<<< HEAD
+=======
+              "ShootLag": 10.0,
+              "ShootRate": 1.0,
+              "DepthGDDTargetMul": 1.0,
+              "HasSeedTreatment": false,
+              "HasPathogen": false,
+>>>>>>> a58210d87 (implement improved emergence model)
               "Start": "Germination",
               "End": "Emergence",
               "TTForTimeStep": 0.0,
