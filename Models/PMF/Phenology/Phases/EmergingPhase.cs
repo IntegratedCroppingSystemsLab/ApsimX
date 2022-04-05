@@ -91,7 +91,7 @@ namespace Models.PMF.Phen
         public double[] MoistureLoss { get; set; } = new double[] { 0.025, 0, 0.1 };
 
         /// <summary>Moisture-based seed loss factors (with untreated pathogen)</summary>
-        public double[] MoistureLossPathogen { get; set; } = new double[] { 0.8, 0.6, 0.4 };
+        public double[] MoistureLossPathogen { get; set; } = new double[] { 0.2, 0.4, 0.7 };
 
         /// <summary>Soil moisture reference</summary>
         private ISoilWater SoilRef = null;
