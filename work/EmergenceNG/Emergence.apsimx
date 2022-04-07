@@ -1,0 +1,1980 @@
+{
+  "$type": "Models.Core.Simulations, Models",
+  "ExplorerWidth": 285,
+  "Version": 147,
+  "Name": "Simulations",
+  "Children": [
+    {
+      "$type": "Models.Storage.DataStore, Models",
+      "useFirebird": false,
+      "CustomFileName": null,
+      "Name": "DataStore",
+      "Children": [
+        {
+          "$type": "Models.PostSimulationTools.ExcelInput, Models",
+          "FileNames": [
+            "DepthMerged.xlsx"
+          ],
+          "SheetNames": [
+            "Merged"
+          ],
+          "Name": "ExcelInput",
+          "Children": [],
+          "Enabled": true,
+          "ReadOnly": false
+        }
+      ],
+      "Enabled": true,
+      "ReadOnly": false
+    },
+    {
+      "$type": "Models.Memo, Models",
+      "Text": "## learn APSIM next gen\n1. go through some examples and apsim website/training videos\n2. in particular focus on optimization and sensitivity tools \n3. familiarize yourself with the source code & how we add new equations into apsim\n\n## model development and parametrization\n1. set up the 28 experiments in apsim (5 categories, see excel and pptx)\n2. add measured data into the UI\n3. create graphs (obs vs sims) with default model \n4. develop and add equations in the soybean emergence model (see pptx)\n5. use apsim R optimization algorithm to optimize constant parameters values (see apsim example for how to use the optimizer)\n6. calculate statitsics (eg RMSE) and other using APSIM tools\n\n## model validation\n1. set up validation field experiments in apsim (n=50 to 100)\n2. add observations and graphs (obs vs predicted)\n3. calculate statistics\n\n## submit new code and publication\n1. the publication is 60% written\n2. once we have the paper published or before we submit the new code via github to APSIM Reference panel for review and release\n\n",
+      "Name": "Read me 14 steps",
+      "Children": [],
+      "Enabled": true,
+      "ReadOnly": false
+    },
+    {
+      "$type": "Models.Optimisation.CroptimizR, Models",
+      "Parameters": [
+        {
+          "$type": "Models.Sensitivity.Parameter, Models",
+          "Name": "DepthGDD1",
+          "Path": "[Soybean].Phenology.DepthGDDTarget.XYPairs.Y[1]",
+          "LowerBound": 60.0,
+          "UpperBound": 140.0
+        },
+        {
+          "$type": "Models.Sensitivity.Parameter, Models",
+          "Name": "DepthGDD2",
+          "Path": "[Soybean].Phenology.DepthGDDTarget.XYPairs.Y[2]",
+          "LowerBound": 112.0,
+          "UpperBound": 204.0
+        },
+        {
+          "$type": "Models.Sensitivity.Parameter, Models",
+          "Name": "DepthGDD3",
+          "Path": "[Soybean].Phenology.DepthGDDTarget.XYPairs.Y[3]",
+          "LowerBound": 210.0,
+          "UpperBound": 390.0
+        }
+      ],
+      "PredictedTableName": "ReportSoybean",
+      "ObservedTableName": "Merged",
+      "VariableNames": [
+        "Emerged"
+      ],
+      "RandomSeed": null,
+      "OptimizationMethod": {
+        "$type": "Models.Optimisation.Simplex, Models",
+        "CriticalFunction": 1,
+        "NoRepetitions": 10,
+        "Tolerance": 1E-05,
+        "MaxEval": 10
+      },
+      "Name": "CroptimizR",
+      "Children": [
+        {
+          "$type": "Models.Factorial.Experiment, Models",
+          "DisabledSimNames": null,
+          "Name": "ExpDepth",
+          "Children": [
+            {
+              "$type": "Models.Factorial.Factors, Models",
+              "Name": "Factors",
+              "Children": [
+                {
+                  "$type": "Models.Factorial.Factor, Models",
+                  "Specification": "[paddock].Sow.Script.SowingDepth = 0,25,50,75",
+                  "Name": "Depth",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Core.Simulation, Models",
+              "IsRunning": false,
+              "Descriptors": null,
+              "Name": "Soy",
+              "Children": [
+                {
+                  "$type": "Models.Clock, Models",
+                  "Start": "2018-06-01T00:00:00",
+                  "End": "2018-06-22T00:00:00",
+                  "Name": "clock",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Summary, Models",
+                  "Verbosity": 100,
+                  "Name": "summaryfile",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Climate.Weather, Models",
+                  "ConstantsFile": null,
+                  "FileName": "Ames_2021.11.13.met",
+                  "ExcelWorkSheetName": "",
+                  "Name": "Weather",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Soils.Arbitrator.SoilArbitrator, Models",
+                  "Name": "Soil Arbitrator",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Core.Zone, Models",
+                  "Area": 1.0,
+                  "Slope": 0.0,
+                  "AspectAngle": 0.0,
+                  "Altitude": 50.0,
+                  "Name": "paddock",
+                  "Children": [
+                    {
+                      "$type": "Models.Fertiliser, Models",
+                      "ResourceName": "Fertiliser",
+                      "Name": "fertiliser",
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Soils.Soil, Models",
+                      "RecordNumber": 0,
+                      "ASCOrder": "Vertosol",
+                      "ASCSubOrder": "Black",
+                      "SoilType": "Clay",
+                      "LocalName": null,
+                      "Site": "Norwin",
+                      "NearestTown": "Norwin",
+                      "Region": "Darling Downs and Granite Belt",
+                      "State": "Queensland",
+                      "Country": "Australia",
+                      "NaturalVegetation": "Qld. Bluegrass, possible Qld. Blue gum",
+                      "ApsoilNumber": "900",
+                      "Latitude": -27.581836,
+                      "Longitude": 151.320206,
+                      "LocationAccuracy": " +/- 20m",
+                      "YearOfSampling": null,
+                      "DataSource": "CSIRO Sustainable Ecosystems, Toowoomba; Characteriesd as part of the GRDC funded project\"Doing it better, doing it smarter, managing soil water in Australian agriculture' 2011",
+                      "Comments": "OC, CLL for all crops estimated-based on Bongeen Mywybilla Soil No1",
+                      "Name": "Soil",
+                      "Children": [
+                        {
+                          "$type": "Models.Soils.Physical, Models",
+                          "Depth": [
+                            "0-15",
+                            "15-30",
+                            "30-60",
+                            "60-90",
+                            "90-120",
+                            "120-150",
+                            "150-180"
+                          ],
+                          "Thickness": [
+                            150.0,
+                            150.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0
+                          ],
+                          "ParticleSizeClay": null,
+                          "ParticleSizeSand": null,
+                          "ParticleSizeSilt": null,
+                          "Rocks": null,
+                          "Texture": null,
+                          "BD": [
+                            1.01056473311131,
+                            1.07145631083388,
+                            1.09393858528057,
+                            1.15861335018721,
+                            1.17301160318016,
+                            1.16287303586874,
+                            1.18749547755906
+                          ],
+                          "AirDry": [
+                            0.130250054518252,
+                            0.16,
+                            0.16,
+                            0.16,
+                            0.16,
+                            0.16,
+                            0.16
+                          ],
+                          "LL15": [
+                            0.16,
+                            0.16,
+                            0.16,
+                            0.16,
+                            0.16,
+                            0.16,
+                            0.16
+                          ],
+                          "DUL": [
+                            0.33,
+                            0.33,
+                            0.33,
+                            0.33,
+                            0.33,
+                            0.33,
+                            0.33
+                          ],
+                          "SAT": [
+                            0.48,
+                            0.48,
+                            0.48,
+                            0.48,
+                            0.48,
+                            0.48,
+                            0.48
+                          ],
+                          "KS": [
+                            20.0,
+                            20.0,
+                            20.0,
+                            20.0,
+                            20.0,
+                            20.0,
+                            20.0
+                          ],
+                          "BDMetadata": null,
+                          "AirDryMetadata": null,
+                          "LL15Metadata": null,
+                          "DULMetadata": null,
+                          "SATMetadata": null,
+                          "KSMetadata": null,
+                          "RocksMetadata": null,
+                          "TextureMetadata": null,
+                          "ParticleSizeSandMetadata": null,
+                          "ParticleSizeSiltMetadata": null,
+                          "ParticleSizeClayMetadata": null,
+                          "Name": "Physical",
+                          "Children": [
+                            {
+                              "$type": "Models.Soils.SoilCrop, Models",
+                              "LL": [
+                                0.16,
+                                0.17,
+                                0.2,
+                                0.22,
+                                0.24,
+                                0.26,
+                                0.3
+                              ],
+                              "KL": [
+                                0.06,
+                                0.06,
+                                0.06,
+                                0.04,
+                                0.04,
+                                0.02,
+                                0.01
+                              ],
+                              "XF": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                              ],
+                              "LLMetadata": null,
+                              "KLMetadata": null,
+                              "XFMetadata": null,
+                              "Name": "SoybeanSoil",
+                              "Children": [],
+                              "Enabled": true,
+                              "ReadOnly": false
+                            }
+                          ],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        },
+                        {
+                          "$type": "Models.WaterModel.WaterBalance, Models",
+                          "SummerDate": "1-Nov",
+                          "SummerU": 5.0,
+                          "SummerCona": 5.0,
+                          "WinterDate": "1-Apr",
+                          "WinterU": 5.0,
+                          "WinterCona": 5.0,
+                          "DiffusConst": 40.0,
+                          "DiffusSlope": 16.0,
+                          "Salb": 0.12,
+                          "CN2Bare": 73.0,
+                          "CNRed": 20.0,
+                          "CNCov": 0.8,
+                          "DischargeWidth": "NaN",
+                          "CatchmentArea": "NaN",
+                          "Thickness": [
+                            150.0,
+                            150.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0
+                          ],
+                          "SWCON": [
+                            0.3,
+                            0.3,
+                            0.3,
+                            0.3,
+                            0.3,
+                            0.3,
+                            0.3
+                          ],
+                          "KLAT": null,
+                          "ResourceName": "WaterBalance",
+                          "Name": "SoilWater",
+                          "Enabled": true,
+                          "ReadOnly": false
+                        },
+                        {
+                          "$type": "Models.Soils.Organic, Models",
+                          "Depth": [
+                            "0-15",
+                            "15-30",
+                            "30-60",
+                            "60-90",
+                            "90-120",
+                            "120-150",
+                            "150-180"
+                          ],
+                          "FOMCNRatio": 40.0,
+                          "Thickness": [
+                            150.0,
+                            150.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0
+                          ],
+                          "Carbon": [
+                            1.2,
+                            0.96,
+                            0.6,
+                            0.3,
+                            0.18,
+                            0.12,
+                            0.12
+                          ],
+                          "SoilCNRatio": [
+                            12.0,
+                            12.0,
+                            12.0,
+                            12.0,
+                            12.0,
+                            12.0,
+                            12.0
+                          ],
+                          "FBiom": [
+                            0.04,
+                            0.02,
+                            0.02,
+                            0.02,
+                            0.01,
+                            0.01,
+                            0.01
+                          ],
+                          "FInert": [
+                            0.4,
+                            0.6,
+                            0.8,
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                          ],
+                          "FOM": [
+                            347.1290323127564,
+                            270.3443621919937,
+                            163.97214434990104,
+                            99.45413288704063,
+                            60.32198083112468,
+                            36.58713082867487,
+                            22.1912165985086
+                          ],
+                          "CarbonMetadata": null,
+                          "FOMMetadata": null,
+                          "Name": "Organic",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        },
+                        {
+                          "$type": "Models.Soils.Chemical, Models",
+                          "Depth": [
+                            "0-15",
+                            "15-30",
+                            "30-60",
+                            "60-90",
+                            "90-120",
+                            "120-150",
+                            "150-180"
+                          ],
+                          "Thickness": [
+                            150.0,
+                            150.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0
+                          ],
+                          "NO3N": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                          ],
+                          "NH4N": [
+                            0.1,
+                            0.1,
+                            0.1,
+                            0.1,
+                            0.1,
+                            0.1,
+                            0.1
+                          ],
+                          "PH": [
+                            8.0,
+                            8.0,
+                            8.0,
+                            8.0,
+                            8.0,
+                            8.0,
+                            8.0
+                          ],
+                          "CL": null,
+                          "EC": null,
+                          "ESP": null,
+                          "LabileP": null,
+                          "UnavailableP": null,
+                          "ECMetadata": null,
+                          "CLMetadata": null,
+                          "ESPMetadata": null,
+                          "PHMetadata": null,
+                          "Name": "Chemical",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        },
+                        {
+                          "$type": "Models.Soils.InitialWater, Models",
+                          "PercentMethod": 1,
+                          "FractionFull": 1.0,
+                          "DepthWetSoil": "NaN",
+                          "RelativeTo": null,
+                          "Name": "InitialWater",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        },
+                        {
+                          "$type": "Models.Soils.Sample, Models",
+                          "Depth": [
+                            "0-15",
+                            "15-30",
+                            "30-60",
+                            "60-90",
+                            "90-120",
+                            "120-150",
+                            "150-180"
+                          ],
+                          "Thickness": [
+                            150.0,
+                            150.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0,
+                            300.0
+                          ],
+                          "NO3": null,
+                          "NH4": null,
+                          "LabileP": null,
+                          "UnavailableP": null,
+                          "SW": [
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN"
+                          ],
+                          "OC": [
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN"
+                          ],
+                          "EC": [
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN"
+                          ],
+                          "CL": [
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN"
+                          ],
+                          "ESP": [
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN"
+                          ],
+                          "PH": [
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN",
+                            "NaN"
+                          ],
+                          "SWUnits": 0,
+                          "OCUnits": 0,
+                          "PHUnits": 0,
+                          "Name": "InitialN",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        },
+                        {
+                          "$type": "Models.Soils.CERESSoilTemperature, Models",
+                          "Name": "Temperature",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        },
+                        {
+                          "$type": "Models.Soils.Nutrients.Nutrient, Models",
+                          "ResourceName": "Nutrient",
+                          "Name": "Nutrient",
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Surface.SurfaceOrganicMatter, Models",
+                      "InitialResidueName": "maize",
+                      "InitialResidueType": "maize",
+                      "InitialResidueMass": 100.0,
+                      "InitialStandingFraction": 0.0,
+                      "InitialCPR": 0.0,
+                      "InitialCNR": 55.0,
+                      "ResourceName": "SurfaceOrganicMatter",
+                      "Name": "SurfaceOrganicMatter",
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.MicroClimate, Models",
+                      "a_interception": 0.0,
+                      "b_interception": 1.0,
+                      "c_interception": 0.0,
+                      "d_interception": 0.0,
+                      "SoilHeatFluxFraction": 0.4,
+                      "MinimumHeightDiffForNewLayer": 0.0,
+                      "NightInterceptionFraction": 0.5,
+                      "ReferenceHeight": 2.0,
+                      "Name": "MicroClimate",
+                      "Children": [],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Manager, Models",
+                      "Code": "using Models.PMF;\r\nusing Models.Core;\r\nusing System;\r\nnamespace Models\r\n{\r\n    [Serializable]\r\n    public class Script : Model\r\n    {\r\n        [Link] Clock Clock;\r\n        [Link] Fertiliser Fertiliser;\r\n        [Link] Summary Summary;\r\n        \r\n        \r\n        [Description(\"Amount of fertiliser to be applied (kg/ha)\")]\r\n        public double Amount { get; set;}\r\n        \r\n        [Description(\"Crop to be fertilised\")]\r\n        public string CropName { get; set;}\r\n        \r\n        \r\n        \r\n\r\n        [EventSubscribe(\"Sowing\")]\r\n        private void OnSowing(object sender, EventArgs e)\r\n        {\r\n            Model crop = sender as Model;\r\n            if (crop.Name.ToLower()==CropName.ToLower())\r\n                Fertiliser.Apply(Amount: Amount, Type: Fertiliser.Types.NO3N);\r\n        }\r\n        \r\n    }\r\n}\r\n",
+                      "Parameters": [
+                        {
+                          "Key": "Amount",
+                          "Value": "10"
+                        },
+                        {
+                          "Key": "CropName",
+                          "Value": "soybean"
+                        }
+                      ],
+                      "Name": "SowingFertiliser",
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Manager, Models",
+                      "Code": "using Models.PMF.Phen;\r\nusing APSIM.Shared.Utilities;\r\nusing System.Xml.Serialization;\r\nusing Models;\r\nusing Models.PMF;\r\nusing Models.Soils;\r\nusing System.Text;\r\nusing System.Collections.Generic;\r\nusing Models.Core;\r\nusing System;\r\nusing Models.Soils.Nutrients;\r\n\r\nnamespace Models\r\n{\r\n    [Serializable] \r\n    public class Script : Model\r\n    {\r\n        [Link] private Plant Soybean;\r\n        [Link] private Zone zone;\r\n        [Link(Type = LinkType.Path, Path = \"[Soybean].Phenology\")]\r\n        private Phenology phenology;\r\n                    \r\n        \r\n        [EventSubscribe(\"StartOfSimulation\")]\r\n        private void OnSimulationCommencing(object sender, EventArgs e)\r\n        {\r\n        }\r\n        \r\n        [EventSubscribe(\"DoManagement\")]\r\n        private void OnDoManagement(object sender, EventArgs e)\r\n        {\r\n            if (phenology.CurrentPhase.Name == \"ReadyForHarvesting\")\r\n            {\r\n                Soybean.Harvest();\r\n                Soybean.EndCrop();\r\n            }\r\n        }\r\n        \r\n        [EventSubscribe(\"DoManagementCalculations\")]\r\n        private void OnDoManagementCalculations(object sender, EventArgs e)\r\n        {\r\n            \r\n        }\r\n    }\r\n}\r\n       \r\n",
+                      "Parameters": [],
+                      "Name": "Harvesting",
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Manager, Models",
+                      "Code": "using APSIM.Shared.Utilities;\r\nusing Models.Utilities;\r\nusing Models.Soils;\r\nusing Models.PMF;\r\nusing Models.Core;\r\nusing System;\r\n\r\nnamespace Models\r\n{\r\n    [Serializable]\r\n    public class Script : Model\r\n    {\r\n        [Link] Clock Clock;\r\n        [Link] Fertiliser Fertiliser;\r\n        [Link] Summary Summary;\r\n        [Link] Soil Soil;\r\n        \r\n        [Description(\"Crop\")]\r\n        public IPlant Crop { get; set; }\r\n\r\n        [Description(\"Sowing date (d-mmm)\")]\r\n        public string SowDate { get; set; }\r\n\r\n        [Display(Type = DisplayType.CultivarName)]\r\n        [Description(\"Cultivar to be sown\")]\r\n        public string CultivarName { get; set; }\r\n\r\n        [Description(\"Sowing depth (mm)\")]\r\n        public double SowingDepth { get; set; }\r\n\r\n        [Description(\"Row spacing (mm)\")]\r\n        public double RowSpacing { get; set; }\r\n\r\n        [Description(\"Plant population (/m2)\")]\r\n        public double Population { get; set; }\r\n\r\n        [EventSubscribe(\"DoManagement\")]\r\n        private void OnDoManagement(object sender, EventArgs e)\r\n        {\r\n            if (DateUtilities.WithinDates(SowDate, Clock.Today, SowDate))\r\n            {\r\n                Crop.Sow(population: Population, cultivar: CultivarName, depth: SowingDepth, rowSpacing: RowSpacing);    \r\n            }\r\n        }\r\n    }\r\n}\r\n",
+                      "Parameters": [
+                        {
+                          "Key": "SowingDepth",
+                          "Value": "50"
+                        },
+                        {
+                          "Key": "Crop",
+                          "Value": "[Soybean]"
+                        },
+                        {
+                          "Key": "SowDate",
+                          "Value": "1-Jun"
+                        },
+                        {
+                          "Key": "CultivarName",
+                          "Value": "PioneerP92Y75_MG27"
+                        },
+                        {
+                          "Key": "RowSpacing",
+                          "Value": "750"
+                        },
+                        {
+                          "Key": "Population",
+                          "Value": "10"
+                        }
+                      ],
+                      "Name": "Sow",
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Report, Models",
+                      "VariableNames": [
+                        "[Clock].Today as Clock.Today",
+                        "[Soybean].AboveGround.Wt",
+                        "[Soybean].Grain.Total.Wt",
+                        "",
+                        "//==== Phenology",
+                        "",
+                        "[Soybean].Phenology.Stage",
+                        "[Soybean].Phenology.CurrentStageName",
+                        "[Soybean].Phenology.AccumulatedEmergedTT",
+                        "[Soybean].Phenology.AccumulatedTT",
+                        "[NormalizedEmergence].Script.emergenceFraction * [Soybean].Population as Emerged",
+                        "//[Soybean].Phenology.FractionInCurrentPhase * [Sow].Script.Population as Emerged",
+                        "[Soybean].Phenology.Zadok   ",
+                        "[Soil].Physical.LL15[1]",
+                        "[Soil].Physical.DUL[1]",
+                        "[Soil].Physical.SAT[1]",
+                        "[Soil].SoilWater.SW[1]                           // not active in soybean",
+                        "",
+                        "[Soybean].Phenology.Germinating.GerminationDate",
+                        "[Soybean].Phenology.Emerging.EmergenceDate             // missing maturity date (to-do)",
+                        "[Soybean].Phenology.EmergenceDAS",
+                        "[Soybean].Phenology.FloweringDAS",
+                        "[Soybean].Phenology.MaturityDAS",
+                        "",
+                        "[Soybean].Phenology.Photoperiod.DayLength",
+                        "[Soybean].Phenology.ThermalTime",
+                        "",
+                        "[Soybean].Phenology.Germinating.Start",
+                        "[Soybean].Phenology.Germinating.End",
+                        "[Soybean].Phenology.Emerging.ProgressThroughPhase",
+                        "[Soybean].Phenology.Emerging.Target",
+                        "[Soybean].Phenology.EarlyFlowering.ProgressThroughPhase",
+                        "[Soybean].Phenology.EarlyFlowering.Target",
+                        "[Soybean].Phenology.EarlyPodDevelopment.ProgressThroughPhase",
+                        "[Soybean].Phenology.EarlyPodDevelopment.Target",
+                        "[Soybean].Phenology.EarlyGrainFilling.ProgressThroughPhase",
+                        "[Soybean].Phenology.EarlyGrainFilling.Target",
+                        "[Soybean].Phenology.LateGrainFilling.ProgressThroughPhase",
+                        "[Soybean].Phenology.LateGrainFilling.Target",
+                        "[Soybean].Phenology.Maturing.ProgressThroughPhase",
+                        "[Soybean].Phenology.Maturing.Target"
+                      ],
+                      "EventNames": [
+                        "[Clock].EndOfDay"
+                      ],
+                      "GroupByVariableName": null,
+                      "Name": "ReportSoybean",
+                      "Children": [],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Manager, Models",
+                      "Code": "using Models.PMF.Phen;\r\nusing APSIM.Shared.Utilities;\r\nusing System.Xml.Serialization;\r\nusing Models;\r\nusing Models.PMF;\r\nusing Models.Soils;\r\nusing System.Text;\r\nusing System.Collections.Generic;\r\nusing Models.Core;\r\nusing System;\r\nusing Models.Soils.Nutrients;\r\n\r\nnamespace Models\r\n{\r\n    [Serializable] \r\n    public class Script : Model\r\n    {\r\n        [Link] private Plant Soybean;\r\n        [Link] private Zone zone;\r\n        [Link(Type = LinkType.Path, Path = \"[Soybean].Phenology\")]\r\n        private Phenology phenology;\n        \n        [Description(\"NormalizedEmergenceFraction\")]\n        public double emergenceFraction { get; set; }\r\n                    \r\n        [EventSubscribe(\"StartOfSimulation\")]\r\n        private void OnSimulationCommencing(object sender, EventArgs e)\r\n        {\n\t\t\temergenceFraction = 0.0f;\r\n        }\r\n        \r\n        [EventSubscribe(\"DoManagement\")]\r\n        private void OnDoManagement(object sender, EventArgs e)\r\n        {\n        \tif (phenology.CurrentPhaseName == \"Germinating\")\n        \t\temergenceFraction = 0.0f;\n        \telse if (phenology.CurrentPhaseName == \"Emerging\")\n        \t\temergenceFraction = phenology.FractionInCurrentPhase;\n        \telse\r\n                emergenceFraction = 1.0f;\r\n        }\r\n    }\r\n}\r\n       \r\n",
+                      "Parameters": [
+                        {
+                          "Key": "emergenceFraction",
+                          "Value": "0"
+                        }
+                      ],
+                      "Name": "NormalizedEmergence",
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.PMF.Plant, Models",
+                      "ResourceName": "Soybean",
+                      "Name": "Soybean",
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Core.Replacements, Models",
+              "Name": "Replacements",
+              "Children": [],
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Core.Folder, Models",
+              "ShowInDocs": false,
+              "GraphsPerPage": 6,
+              "Name": "Graphs",
+              "Children": [
+                {
+                  "$type": "Models.Graph, Models",
+                  "Caption": null,
+                  "Axis": [
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 3,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    },
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 0,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    }
+                  ],
+                  "LegendPosition": 0,
+                  "LegendOrientation": 0,
+                  "AnnotationLocation": 0,
+                  "DisabledSeries": [],
+                  "LegendOutsideGraph": false,
+                  "Name": "DepthZeroIn",
+                  "Children": [
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": -11094807,
+                      "FactorToVaryColours": null,
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 11,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Emerged",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": false,
+                      "IncludeSeriesNameInLegend": false,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "[Depth]=0 AND [Clock.Today]>='2018-06-01'",
+                      "Name": "Sim",
+                      "Children": [
+                        {
+                          "$type": "Models.EventNamesOnGraph, Models",
+                          "ColumnName": "Soybean.Phenology.CurrentStageName",
+                          "SimulationName": "ExpDepthDepth0",
+                          "Name": "EventNamesOnGraph",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Graph, Models",
+                  "Caption": null,
+                  "Axis": [
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 3,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    },
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 0,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    }
+                  ],
+                  "LegendPosition": 0,
+                  "LegendOrientation": 0,
+                  "AnnotationLocation": 0,
+                  "DisabledSeries": [],
+                  "LegendOutsideGraph": false,
+                  "Name": "DepthOneIn",
+                  "Children": [
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": -16736653,
+                      "FactorToVaryColours": null,
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 11,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Emerged",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": true,
+                      "IncludeSeriesNameInLegend": false,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "[Depth]=25 AND [Clock.Today]>='2018-06-01'",
+                      "Name": "Sim",
+                      "Children": [
+                        {
+                          "$type": "Models.EventNamesOnGraph, Models",
+                          "ColumnName": "Soybean.Phenology.CurrentStageName",
+                          "SimulationName": "ExpDepthDepth25",
+                          "Name": "EventNamesOnGraph",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Graph, Models",
+                  "Caption": null,
+                  "Axis": [
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 3,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    },
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 0,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    }
+                  ],
+                  "LegendPosition": 0,
+                  "LegendOrientation": 0,
+                  "AnnotationLocation": 0,
+                  "DisabledSeries": [],
+                  "LegendOutsideGraph": false,
+                  "Name": "DepthTwoIn",
+                  "Children": [
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": -2793984,
+                      "FactorToVaryColours": null,
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 11,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Emerged",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": true,
+                      "IncludeSeriesNameInLegend": false,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "[Depth]=50 AND [Clock.Today]>='2018-06-01'",
+                      "Name": "Sim",
+                      "Children": [
+                        {
+                          "$type": "Models.EventNamesOnGraph, Models",
+                          "ColumnName": "Soybean.Phenology.CurrentStageName",
+                          "SimulationName": "ExpDepthDepth50",
+                          "Name": "EventNamesOnGraph",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Graph, Models",
+                  "Caption": null,
+                  "Axis": [
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 3,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    },
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 0,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    }
+                  ],
+                  "LegendPosition": 0,
+                  "LegendOrientation": 0,
+                  "AnnotationLocation": 0,
+                  "DisabledSeries": [],
+                  "LegendOutsideGraph": false,
+                  "Name": "DepthThreeIn",
+                  "Children": [
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": -3376729,
+                      "FactorToVaryColours": null,
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 11,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Emerged",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": true,
+                      "IncludeSeriesNameInLegend": false,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "[Depth]=75 AND [Clock.Today]>='2018-06-01'",
+                      "Name": "Sim",
+                      "Children": [
+                        {
+                          "$type": "Models.EventNamesOnGraph, Models",
+                          "ColumnName": "Soybean.Phenology.CurrentStageName",
+                          "SimulationName": "ExpDepthDepth75",
+                          "Name": "EventNamesOnGraph",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Graph, Models",
+                  "Caption": null,
+                  "Axis": [
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 3,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    },
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 0,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    }
+                  ],
+                  "LegendPosition": 0,
+                  "LegendOrientation": 0,
+                  "AnnotationLocation": 0,
+                  "DisabledSeries": [],
+                  "LegendOutsideGraph": false,
+                  "Name": "MoistureDebug",
+                  "Children": [
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": -16747854,
+                      "FactorToVaryColours": "Depth",
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 11,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Soil.SoilWater.SW(1)",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": false,
+                      "IncludeSeriesNameInLegend": false,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "",
+                      "Name": "Sim",
+                      "Children": [
+                        {
+                          "$type": "Models.EventNamesOnGraph, Models",
+                          "ColumnName": "Soybean.Phenology.CurrentStageName",
+                          "SimulationName": "ExpDepthDepth0",
+                          "Name": "EventNamesOnGraph",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": -16747854,
+                      "FactorToVaryColours": "Depth",
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 11,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Soil.Physical.DUL(1)",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": false,
+                      "IncludeSeriesNameInLegend": false,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "",
+                      "Name": "Sim1",
+                      "Children": [
+                        {
+                          "$type": "Models.EventNamesOnGraph, Models",
+                          "ColumnName": "Soybean.Phenology.CurrentStageName",
+                          "SimulationName": "ExpDepthDepth0",
+                          "Name": "EventNamesOnGraph",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": -16747854,
+                      "FactorToVaryColours": "Depth",
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 11,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Soil.Physical.LL15(1)",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": false,
+                      "IncludeSeriesNameInLegend": false,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "",
+                      "Name": "Sim2",
+                      "Children": [
+                        {
+                          "$type": "Models.EventNamesOnGraph, Models",
+                          "ColumnName": "Soybean.Phenology.CurrentStageName",
+                          "SimulationName": "ExpDepthDepth0",
+                          "Name": "EventNamesOnGraph",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": -16747854,
+                      "FactorToVaryColours": "Depth",
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 11,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Soil.Physical.SAT(1)",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": false,
+                      "IncludeSeriesNameInLegend": false,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "",
+                      "Name": "Sim3",
+                      "Children": [
+                        {
+                          "$type": "Models.EventNamesOnGraph, Models",
+                          "ColumnName": "Soybean.Phenology.CurrentStageName",
+                          "SimulationName": "ExpDepthDepth0",
+                          "Name": "EventNamesOnGraph",
+                          "Children": [],
+                          "Enabled": true,
+                          "ReadOnly": false
+                        }
+                      ],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Graph, Models",
+                  "Caption": null,
+                  "Axis": [
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 3,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    },
+                    {
+                      "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                      "Title": null,
+                      "Position": 0,
+                      "Inverted": false,
+                      "CrossesAtZero": false,
+                      "Minimum": null,
+                      "Maximum": null,
+                      "Interval": null
+                    }
+                  ],
+                  "LegendPosition": 0,
+                  "LegendOrientation": 0,
+                  "AnnotationLocation": 0,
+                  "DisabledSeries": [],
+                  "LegendOutsideGraph": false,
+                  "Name": "Emergence",
+                  "Children": [
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": 0,
+                      "FactorToVaryColours": "Depth",
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 0,
+                      "MarkerSize": 1,
+                      "Line": 4,
+                      "LineThickness": 0,
+                      "TableName": "Merged",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Emerged",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": true,
+                      "IncludeSeriesNameInLegend": true,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": null,
+                      "Name": "Obs",
+                      "Children": [],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Series, Models",
+                      "Type": 1,
+                      "XAxis": 3,
+                      "YAxis": 0,
+                      "ColourArgb": 0,
+                      "FactorToVaryColours": "Depth",
+                      "FactorToVaryMarkers": null,
+                      "FactorToVaryLines": null,
+                      "Marker": 0,
+                      "MarkerSize": 2,
+                      "Line": 0,
+                      "LineThickness": 0,
+                      "TableName": "ReportSoybean",
+                      "XFieldName": "Clock.Today",
+                      "YFieldName": "Emerged",
+                      "X2FieldName": null,
+                      "Y2FieldName": null,
+                      "ShowInLegend": true,
+                      "IncludeSeriesNameInLegend": true,
+                      "Cumulative": false,
+                      "CumulativeX": false,
+                      "Filter": "[CheckpointID]=1",
+                      "Name": "Sim",
+                      "Children": [],
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "Enabled": true,
+              "ReadOnly": false
+            }
+          ],
+          "Enabled": true,
+          "ReadOnly": false
+        },
+        {
+          "$type": "Models.Core.Folder, Models",
+          "ShowInDocs": false,
+          "GraphsPerPage": 6,
+          "Name": "OptResults",
+          "Children": [
+            {
+              "$type": "Models.Graph, Models",
+              "Caption": null,
+              "Axis": [
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": null,
+                  "Position": 3,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                },
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": null,
+                  "Position": 0,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                }
+              ],
+              "LegendPosition": 0,
+              "LegendOrientation": 0,
+              "AnnotationLocation": 0,
+              "DisabledSeries": [],
+              "LegendOutsideGraph": false,
+              "Name": "Objective",
+              "Children": [
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -16777216,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "Objective Function Value",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": false,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": null,
+                  "Name": "ObjectiveFn",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Graph, Models",
+              "Caption": null,
+              "Axis": [
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": null,
+                  "Position": 0,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                },
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": "Repetition",
+                  "Position": 3,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                }
+              ],
+              "LegendPosition": 0,
+              "LegendOrientation": 0,
+              "AnnotationLocation": 0,
+              "DisabledSeries": [],
+              "LegendOutsideGraph": false,
+              "Name": "GDDParameters",
+              "Children": [
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -16736653,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "DepthGDD1 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "GDD0",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -16747854,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "DepthGDD2 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "GDD50",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -3376729,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "DepthGDD3 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "GDD100",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Graph, Models",
+              "Caption": null,
+              "Axis": [
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": null,
+                  "Position": 3,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                },
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": null,
+                  "Position": 0,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                }
+              ],
+              "LegendPosition": 0,
+              "LegendOrientation": 0,
+              "AnnotationLocation": 0,
+              "DisabledSeries": [],
+              "LegendOutsideGraph": false,
+              "Name": "Emergence",
+              "Children": [
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": 0,
+                  "FactorToVaryColours": "Depth",
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 8,
+                  "MarkerSize": 1,
+                  "Line": 4,
+                  "LineThickness": 0,
+                  "TableName": "Merged",
+                  "XFieldName": "Clock.Today",
+                  "YFieldName": "Emerged",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": true,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": null,
+                  "Name": "Obs",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": 0,
+                  "FactorToVaryColours": "Depth",
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 2,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "ReportSoybean",
+                  "XFieldName": "Clock.Today",
+                  "YFieldName": "Emerged",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": true,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=2",
+                  "Name": "Sim",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": 0,
+                  "FactorToVaryColours": "Depth",
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 1,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "ReportSoybean",
+                  "XFieldName": "Clock.Today",
+                  "YFieldName": "Emerged",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": true,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "SimOrig",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Graph, Models",
+              "Caption": null,
+              "Axis": [
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": null,
+                  "Position": 0,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                },
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": "Repetition",
+                  "Position": 3,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                }
+              ],
+              "LegendPosition": 0,
+              "LegendOrientation": 0,
+              "AnnotationLocation": 0,
+              "DisabledSeries": [],
+              "LegendOutsideGraph": false,
+              "Name": "SLParameters",
+              "Children": [
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -990142,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "DepthLoss1 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "DepthLoss1",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -2793984,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "DepthLoss3 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "DepthLoss2",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -2793984,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "DepthLoss3 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "DepthLoss3",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -3376729,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "DepthLoss4 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "DepthLoss4",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -16736653,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "TempLoss1 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "TempLoss1",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -16736653,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "TempLoss2 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "TempLoss2",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -16736653,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "TempLoss3 Final",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": true,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": "[CheckpointID]=1",
+                  "Name": "TempLoss3",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "Enabled": true,
+              "ReadOnly": false
+            },
+            {
+              "$type": "Models.Graph, Models",
+              "Caption": null,
+              "Axis": [
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": null,
+                  "Position": 3,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                },
+                {
+                  "$type": "APSIM.Shared.Graphing.Axis, APSIM.Shared",
+                  "Title": null,
+                  "Position": 0,
+                  "Inverted": false,
+                  "CrossesAtZero": false,
+                  "Minimum": null,
+                  "Maximum": null,
+                  "Interval": null
+                }
+              ],
+              "LegendPosition": 0,
+              "LegendOrientation": 0,
+              "AnnotationLocation": 0,
+              "DisabledSeries": [],
+              "LegendOutsideGraph": false,
+              "Name": "OptimalRepetition",
+              "Children": [
+                {
+                  "$type": "Models.Series, Models",
+                  "Type": 1,
+                  "XAxis": 3,
+                  "YAxis": 0,
+                  "ColourArgb": -16777216,
+                  "FactorToVaryColours": null,
+                  "FactorToVaryMarkers": null,
+                  "FactorToVaryLines": null,
+                  "Marker": 0,
+                  "MarkerSize": 0,
+                  "Line": 0,
+                  "LineThickness": 0,
+                  "TableName": "CroptimizR",
+                  "XFieldName": "Repetition",
+                  "YFieldName": "Is Optimal",
+                  "X2FieldName": null,
+                  "Y2FieldName": null,
+                  "ShowInLegend": false,
+                  "IncludeSeriesNameInLegend": false,
+                  "Cumulative": false,
+                  "CumulativeX": false,
+                  "Filter": null,
+                  "Name": "IsOptimal",
+                  "Children": [],
+                  "Enabled": true,
+                  "ReadOnly": false
+                }
+              ],
+              "Enabled": true,
+              "ReadOnly": false
+            }
+          ],
+          "Enabled": true,
+          "ReadOnly": false
+        }
+      ],
+      "Enabled": true,
+      "ReadOnly": false
+    }
+  ],
+  "Enabled": true,
+  "ReadOnly": false
+}

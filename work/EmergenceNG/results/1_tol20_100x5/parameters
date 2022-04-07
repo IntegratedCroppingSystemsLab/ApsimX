@@ -1,0 +1,41 @@
+Optimized parameters from 'initial', 100x5 with 20% tolerance.
+
+# Optimizing parameters
+
+Depth GDD Target
+    0mm ->
+    50mm ->
+    100mm ->
+
+Depth Loss
+    0mm -> 0
+    25mm -> 0
+    50mm -> 0.03
+    75mm -> 0.06
+
+Temperature Loss
+    5c -> 0.5
+    10c -> 0.03
+    35c -> 0.03
+
+# Non-optimized parameters
+
+Moisture GDD accumulation modifier (no pathogen, or treated)
+    LL: 0.85
+    DUL: 1
+    SAT: 0.7
+
+MoistureGDD accumulation modifier (with untreated pathogen)
+    LL: 0.8
+    DUL: 0.6
+    SAT: 0.4
+
+Moisture loss factors
+    LL: 0.025
+    DUL: 0,
+    SAT: 0.1
+
+Moisture loss factors (with untreated pathogen)
+    LL: 0.2
+    DUL: 0.4
+    SAT: 0.7
