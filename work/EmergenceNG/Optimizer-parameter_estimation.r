@@ -1,17 +1,17 @@
 variable_names <- c('Emerged')
 observed_variable_names <- c('Emerged', 'Clock.Today')
 apsimx_path <- '/home/jtst/git/ApsimX/bin/Debug/netcoreapp3.1/Models.dll'
-apsimx_file <- '/tmp/CroptimizR-95a62a26-e492-4b22-8d0a-857448d907c4/input_file.apsimx'
+apsimx_file <- '/tmp/Optimizer-ddc11e8f-01e9-4de4-bf61-7557d8ae9915/input_file.apsimx'
 simulation_names <- c('ExpDepthDepth0', 'ExpDepthDepth25', 'ExpDepthDepth50', 'ExpDepthDepth75')
 predicted_table_name <- 'ReportSoybean'
 observed_table_name <- 'Merged'
-param_info <- list(lb=c('[Replacements].Soybean.Phenology.Emerging.Target.DepthTarget.XYPairs.Y[1]'=60, '[Replacements].Soybean.Phenology.Emerging.Target.DepthTarget.XYPairs.Y[2]'=100, '[Replacements].Soybean.Phenology.Emerging.Target.DepthTarget.XYPairs.Y[3]'=350), ub=c('[Replacements].Soybean.Phenology.Emerging.Target.DepthTarget.XYPairs.Y[1]'=100, '[Replacements].Soybean.Phenology.Emerging.Target.DepthTarget.XYPairs.Y[2]'=150, '[Replacements].Soybean.Phenology.Emerging.Target.DepthTarget.XYPairs.Y[3]'=400))
+param_info <- list(lb=c('[Replacements].Soybean.SeedMortalityRate.MoistureSeedMortality.XYPairs.Y[1]'=0, '[Replacements].Soybean.SeedMortalityRate.MoistureSeedMortality.XYPairs.Y[2]'=0, '[Replacements].Soybean.SeedMortalityRate.MoistureSeedMortality.XYPairs.Y[3]'=0), ub=c('[Replacements].Soybean.SeedMortalityRate.MoistureSeedMortality.XYPairs.Y[1]'=0.2, '[Replacements].Soybean.SeedMortalityRate.MoistureSeedMortality.XYPairs.Y[2]'=0.2, '[Replacements].Soybean.SeedMortalityRate.MoistureSeedMortality.XYPairs.Y[3]'=0.2))
 
 optim_options=list()
-optim_options$nb_rep <- 10
+optim_options$nb_rep <- 5
 optim_options$xtol_rel <- 1E-05
-optim_options$maxeval <- 15
-optim_options$path_results <- '/tmp/CroptimizR-95a62a26-e492-4b22-8d0a-857448d907c4'
+optim_options$maxeval <- 10
+optim_options$path_results <- '/tmp/Optimizer-ddc11e8f-01e9-4de4-bf61-7557d8ae9915'
 
 crit_function <- CroptimizR::crit_log_cwss_corr
 optim_method <- 'nloptr.simplex'
@@ -84,9 +84,9 @@ optim_output=estim_param(obs_list=obs_list,
 duration <- as.double(difftime(Sys.time(), start_time, units = "secs"))
 print(sprintf('duration: %s seconds', duration)) 
 
-output_file <- '/tmp/CroptimizR-95a62a26-e492-4b22-8d0a-857448d907c4/optim_results.csv'
-load('/tmp/CroptimizR-95a62a26-e492-4b22-8d0a-857448d907c4/optim_results.Rdata')
-param_names <- c('DepthGDD1', 'DepthGDD2', 'DepthGDD3')
+output_file <- '/tmp/Optimizer-ddc11e8f-01e9-4de4-bf61-7557d8ae9915/optim_results.csv'
+load('/tmp/Optimizer-ddc11e8f-01e9-4de4-bf61-7557d8ae9915/optim_results.Rdata')
+param_names <- c('TempLoss1', 'TempLoss2', 'TempLoss3')
 
 objectives <- c()
 for (rep in res$nlo) {
