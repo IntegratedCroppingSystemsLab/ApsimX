@@ -265,7 +265,7 @@ namespace Models.Core
                 events.ConnectEvents();
 
                 // Resolve all links
-                links.Resolve(this, true);
+                links.Resolve(this, true, throwOnFail: true);
 
                 events.Publish("SubscribeToEvents", new object[] { this, EventArgs.Empty });
             }
