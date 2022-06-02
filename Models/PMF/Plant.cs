@@ -320,7 +320,10 @@ namespace Models.PMF
 
             // Seed mortality
             if (!IsEmerged && SowingData != null && SowingData.Seeds > 0)
+            {
                 Population -= Population * seedMortalityRate.Value();
+                SowingData.Population = Population;
+            }
         }
 
         /// <summary>Called at the end of the day.</summary>
