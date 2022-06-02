@@ -1,6 +1,7 @@
 using System;
 using Models.Core;
 using Models.Soils;
+using Models.PMF;
 using APSIM.Shared.Utilities;
 using Models.Interfaces;
 
@@ -17,6 +18,14 @@ namespace Models.Functions
 
         [Link]
         ISoilWater soilwater = null;
+
+        [Link]
+        Plant plant = null;
+
+        /// <summary>Gets the value at a certain sowing depth.</summary>
+        public double ValueAtDepth { get {
+            return Value(SoilUtilities.LayerIndexOfDepth(soilwater.Thickness, plant.SowingData.Depth));
+        }}
 
         /// <summary>Gets the value of the function.</summary>
         public double Value(int arrayIndex = -1)
