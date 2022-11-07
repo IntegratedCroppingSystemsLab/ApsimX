@@ -4611,17 +4611,17 @@ namespace Models.Core.ApsimFile
         {
             foreach (JObject predictedObserved in JsonUtilities.ChildrenRecursively(root, "PredictedObserved"))
             {
-                var fieldName3 = predictedObserved["FieldName3UsedForMatch"];
-                if (!string.IsNullOrEmpty(fieldName3.Value<string>()))
-                    predictedObserved["FieldName4UsedForMatch"] = fieldName3.Value<string>();
-                var fieldName2 = predictedObserved["FieldName2UsedForMatch"];
-                if (!string.IsNullOrEmpty(fieldName2.Value<string>()))
-                    predictedObserved["FieldName3UsedForMatch"] = fieldName2.Value<string>();
-                var fieldName1 = predictedObserved["FieldNameUsedForMatch"];
-                if (!string.IsNullOrEmpty(fieldName1.Value<string>()))
-                    predictedObserved["FieldName2UsedForMatch"] = fieldName1.Value<string>();
-                predictedObserved["FieldNameUsedForMatch"] = "SimulationName";
+                // Cascade missing FieldNameUsedForMatch parameters
 
+                String pfx = "FieldNameUsedForMatch";
+                if (!predictedObserved.ContainsKey(pfx))
+                    predictedObserved[pfx] = "SimulationName";
+                if (!predictedObserved.ContainsKey(pfx + "2"))
+                    predictedObserved[pfx + "2"] = predictedObserved[pfx];
+                if (!predictedObserved.ContainsKey(pfx + "3"))
+                    predictedObserved[pfx + "3"] = predictedObserved[pfx + "2"];
+                if (!predictedObserved.ContainsKey(pfx + "4"))
+                    predictedObserved[pfx + "4"] = predictedObserved[pfx + "3"];
             }
         }
 
