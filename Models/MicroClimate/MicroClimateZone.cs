@@ -393,7 +393,7 @@
 
             for (int i = numLayers - 1; i >= 0; i += -1)
             {
-                double Rflux = Rin * 1000000.0 / (dayLengthEvap * hr2s) * (1.0 - Albedo);
+                double Rflux = MathUtilities.Divide(Rin * 1000000.0, dayLengthEvap * hr2s * (1.0 - Albedo), 0);
                 double Rint = 0.0;
 
                 for (int j = 0; j <= Canopies.Count - 1; j++)
@@ -683,7 +683,7 @@
             double maxSunHrs = dayLengthLight;
             double relativeDistance = 1.0 + 0.033 * Math.Cos(0.0172 * day);
             double solarDeclination = 0.409 * Math.Sin(0.0172 * day - 1.39);
-            double sunsetAngle = Math.Acos(-Math.Tan(latitude * deg2Rad) * Math.Tan(solarDeclination));
+            double sunsetAngle = Math.Acos(MathUtilities.Bound(-Math.Tan(latitude * deg2Rad) * Math.Tan(solarDeclination), -1.0, 1.0));
             double extraTerrestrialRadn = 37.6 * relativeDistance * (sunsetAngle * Math.Sin(latitude * deg2Rad) * Math.Sin(solarDeclination) + Math.Cos(latitude * deg2Rad) * Math.Cos(solarDeclination) * Math.Sin(sunsetAngle));
             double maxRadn = 0.75 * extraTerrestrialRadn;
             // finally calculate the sunshine hours as the ratio of maximum possible radiation
