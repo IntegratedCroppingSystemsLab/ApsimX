@@ -470,6 +470,15 @@
                 arrayNode = XmlUtilities.Find(srcNode, "NO3");
                 this.CopyNodeAndValueArray(arrayNode, newNO3Node, "NO3", "InitialValues");
 
+                // Count nutrient layers (assume all have the same count)
+                var layers = 0;
+
+                foreach(var _ in arrayNode)
+                    layers += 1;
+
+                this.InitNodeValueArray(newNO3Node, "EXCO", layers, 0);
+                this.InitNodeValueArray(newNO3Node, "FIP", layers, 1);
+
                 // find soil layers and values for NH4
                 srcNode = XmlUtilities.FindByType(compNode.ParentNode, "Sample");
                 arrayNode = XmlUtilities.Find(srcNode, "Thickness");
@@ -477,10 +486,16 @@
                 arrayNode = XmlUtilities.Find(srcNode, "NH4");
                 this.CopyNodeAndValueArray(arrayNode, newNH4Node, "NH4", "InitialValues");
 
+                this.InitNodeValueArray(newNH4Node, "EXCO", layers, 100);
+                this.InitNodeValueArray(newNH4Node, "FIP", layers, 1);
+
                 // find soil layers for UREA
                 srcNode = XmlUtilities.FindByType(compNode.ParentNode, "Sample");
                 arrayNode = XmlUtilities.Find(srcNode, "Thickness");
                 this.CopyNodeAndValueArray(arrayNode, newUREANode, "Thickness", "Thickness");
+
+                this.InitNodeValueArray(newUREANode, "EXCO", layers, 0);
+                this.InitNodeValueArray(newUREANode, "FIP", layers, 1);
 
                 // initialise the UREA with some default values
                 InitNodeValueArray(newUREANode, "InitialValues", arrayNode.ChildNodes.Count, 0.0);
