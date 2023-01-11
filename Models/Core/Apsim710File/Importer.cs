@@ -459,6 +459,8 @@
             XmlNode newUREANode = this.AddCompNode(destParent, "Solute", "UREA");
 
             XmlNode srcNode = XmlUtilities.FindByType(compNode.ParentNode, "Sample");
+
+
             if (srcNode != null)
             {
                 XmlNode arrayNode;
@@ -470,10 +472,9 @@
                 arrayNode = XmlUtilities.Find(srcNode, "NO3");
                 this.CopyNodeAndValueArray(arrayNode, newNO3Node, "NO3", "InitialValues");
 
-                // Count nutrient layers (assume all have the same count)
                 var layers = 0;
 
-                foreach(var _ in arrayNode)
+                foreach (var _ in arrayNode)
                     layers += 1;
 
                 this.InitNodeValueArray(newNO3Node, "EXCO", layers, 0);
@@ -744,10 +745,14 @@
             List<string> variableNames = new List<string>();
             foreach (XmlNode var in nodes)
             {
-                if (var.InnerText.Contains("yyyy"))
+                string innerText = var.InnerText;
+
+                if (innerText.Contains("yyyy"))
                     variableNames.Add("[Clock].Today");
+                else if (string.Compare(innerText, "day") == 0)
+                    variableNames.Add("[Clock].Today.DayOfYear as day");
                 else
-                    variableNames.Add(var.InnerText);
+                    variableNames.Add("//" + var.InnerText);
             }
 
             // now for the events
@@ -1168,16 +1173,9 @@
             XmlUtilities.FindAllRecursively(compNode, "operation", ref nodes);
             foreach (XmlNode oper in nodes)
             {
-                XmlNode operationNode = newNode.AppendChild(destParent.OwnerDocument.CreateElement("Operation"));
-                XmlNode dateNode = operationNode.AppendChild(destParent.OwnerDocument.CreateElement("Date"));
-
-                childNode = XmlUtilities.Find(oper, "date");
-                dateNode.InnerText = OperationDateToNGDate(childNode?.InnerText);
-
-                XmlNode actionNode = operationNode.AppendChild(destParent.OwnerDocument.CreateElement("Action"));
-
-                string childText = " ";
+                string childText = "";
                 childNode = XmlUtilities.Find(oper, "action");
+
                 if (childNode != null)
                 {
                     childText = childNode.InnerText;
@@ -1190,6 +1188,7 @@
                     if (index > 0)
                     {
                         string operationOn = childText.Substring(0, index);
+
                         if ((string.Compare(operationOn, "fertiliser", true) == 0) && ((childText.IndexOf(" apply") > 0) || (childText.IndexOf(" Apply") > 0)))
                         {
                             string amount = "0", type = string.Empty, depth = "0";
@@ -1199,32 +1198,99 @@
 
                             string newtype;
                             this.fertilisers.TryGetValue(type, out newtype);
+                            
+                            if (newtype == null || newtype.Length == 0)
+                                newtype = "UreaN";
+
                             type = "Fertiliser.Types." + newtype;
                             this.FindTokenValue("depth", childText, ref depth);
 
                             childText = string.Format("[Fertiliser].Apply({0}, {1}, {2});", amount, type, depth);
                         }
+                        else if ((string.Compare(operationOn, "irrigation", true) == 0) && ((childText.IndexOf(" apply") > 0) || (childText.IndexOf(" Apply") > 0)))
+                        {
+                            string amount = "0";
+
+                            this.FindTokenValue("amount", childText, ref amount);
+
+                            childText = string.Format("[Irrigation].Apply({0});", amount);
+                        }
+                        else if ((operationOn.IndexOf("surfaceorganicmatter") > 0) && (childText.IndexOf(" tillage") > 0))
+                        {
+                            string f_incorp = "0", depth = "0";
+
+                            this.FindTokenValue("f_incorp", childText, ref f_incorp);
+                            this.FindTokenValue("depth", childText, ref depth);
+
+                            childText = string.Format("[SurfaceOrganicMatter].Incorporate({0}, {1});", f_incorp, depth);
+                        }
+                        else if ((string.Compare(operationOn, "soybean", true) == 0) || (string.Compare(operationOn, "maize", true) == 0))
+                        {
+                            childText = ParseCropOperation(operationOn, childText);
+                        }
                         else
                         {
-                            if ((string.Compare(operationOn, "irrigation", true) == 0) && ((childText.IndexOf(" apply") > 0) || (childText.IndexOf(" Apply") > 0)))
-                            {
-                                string amount = "0";
-
-                                this.FindTokenValue("amount", childText, ref amount);
-
-                                childText = string.Format("[Irrigation].Apply({0});", amount);
-                            }
-                            else
-                            {
-                                childText = " // " + childText; // for default comment out the operations code for now
-                            }
+                            childText = "// " + childText; // for default comment out the operations code for now
                         }
                     }
+
+                    // Trim again to avoid whitespace operations
+                    childText = childText.Trim();
+
+                    if (childText.Length > 0)
+                    {
+                        XmlNode operationNode = newNode.AppendChild(destParent.OwnerDocument.CreateElement("Operation"));
+                        XmlNode dateNode = operationNode.AppendChild(destParent.OwnerDocument.CreateElement("Date"));
+
+                        childNode = XmlUtilities.Find(oper, "date");
+                        dateNode.InnerText = OperationDateToNGDate(childNode?.InnerText);
+
+                        XmlNode actionNode = operationNode.AppendChild(destParent.OwnerDocument.CreateElement("Action"));
+
+                        actionNode.InnerText = childText;
+                    }
                 }
-                actionNode.InnerText = childText;
             } // next operation
 
             return newNode;
+        }
+
+        /// <Summary>
+        /// Method for converting an Apsim classic crop-based Operation 
+        /// into an equivalent NG operation.
+        /// </Summary>
+        /// <param name="cropName">The name of the crop being acted on</param>
+        /// <param name="childText">The original apsim classic operation text</param>
+        /// <returns>An operation action string for apsim NG</returns>
+        private string ParseCropOperation(string cropName, string childText)
+        {
+            cropName = char.ToUpper(cropName[0]) + cropName.Substring(1);
+
+            if (childText.IndexOf("end_crop") > 0)
+                childText = string.Format("[{0}].EndCrop();", cropName);
+            else if (childText.IndexOf("harvest") > 0)
+                childText = string.Format("[{0}].Harvest();", cropName);
+            else if (childText.IndexOf("sow") > 0)
+            {
+                string rowSpacing = "0", depth = "0", cultivar = "Generic_MG2", population = "0";
+
+                if (string.Compare(cropName, "Maize") == 0)
+                    cultivar = "B_110";
+
+                this.FindTokenValue("plants", childText, ref population);
+                this.FindTokenValue("sowing_depth", childText, ref depth);
+
+                // TODO: stronger cultivar selection
+                //this.FindTokenValue("cultivar", childText, ref cultivar);
+
+                childText = string.Format("[{0}].Sow({1}, {2}, {3}, {4});", cropName, cultivar, population, depth, rowSpacing);
+            }
+            else
+            {
+                throw new System.Exception("bad crop operation");
+            }
+
+            return childText;
         }
 
         /// <Summary>
