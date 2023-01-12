@@ -628,8 +628,56 @@
         private XmlNode ImportGraph(XmlNode compNode, XmlNode destParent, XmlNode newNode)
         {
             newNode = this.AddCompNode(destParent, "Graph", XmlUtilities.NameAttr(compNode));
+
+            foreach (XmlNode child in compNode)
+            {
+                Console.WriteLine("compNode child");
+                Console.WriteLine(XmlUtilities.Serialise(child, false));
+            }
+
+            // Try and add basic series plots
+            foreach (XmlNode plot in XmlUtilities.ChildNodes(compNode, "Plot"))
+            {
+                Console.WriteLine(XmlUtilities.Serialise(plot, false));
+                XmlNode series = destParent.OwnerDocument.CreateElement("Series");
+
+                XmlUtilities.SetNameAttr(series, XmlUtilities.NameAttr(plot));
+
+                XmlNode xNode = XmlUtilities.FindByType(plot, "X");
+                XmlNode yNode = XmlUtilities.FindByType(plot, "Y");
+
+                Console.WriteLine("xNode");
+                Console.WriteLine(XmlUtilities.Serialise(xNode, false));
+
+                if (xNode != null)
+                    this.AddCompNode(series, "XFieldName", xNode.InnerText);
+
+                if (yNode != null)
+                    this.AddCompNode(series, "YFieldName", yNode.InnerText);
+
+                //Console.WriteLine(XmlUtilities.Serialise(series, false));
+
+                newNode.AppendChild(series);
+            }
+
             return newNode;
         }
+
+        /// <summary>
+        /// Converts a classic field name to an NG equivalent, if one exists.
+        /// </summary>
+        /// <param name="fieldName">Classic field name.</param>
+        /// <returns>True if converted OK, false otherwise</returns>
+        private bool ToNGField(ref string fieldName)
+        {
+            if (string.Compare(fieldName, "Date") == 0)
+                fieldName = "[Clock].Today";
+            else
+                return false;
+
+            return true;
+        }
+
 
         /// <summary>
         /// Copy a node to a parent node. Has option of specifying a new node name.
@@ -745,14 +793,14 @@
             List<string> variableNames = new List<string>();
             foreach (XmlNode var in nodes)
             {
-                string innerText = var.InnerText;
+                string varText = var.InnerText;
 
-                if (innerText.Contains("yyyy"))
+                if (varText.Contains("yyyy"))
                     variableNames.Add("[Clock].Today");
-                else if (string.Compare(innerText, "day") == 0)
+                else if (string.Compare(varText, "day") == 0)
                     variableNames.Add("[Clock].Today.DayOfYear as day");
                 else
-                    variableNames.Add("//" + var.InnerText);
+                    variableNames.Add("//" + varText);
             }
 
             // now for the events
