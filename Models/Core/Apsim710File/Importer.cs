@@ -276,7 +276,7 @@
                     this.AddChildComponents(compNode, newSim);
                     AddCompNode(newSim, "SoilArbitrator", "SoilArbitrator");
                 }
-                else if (compNode.Name == "folder")
+                else if (compNode.Name == "folder" or compNode.Name == "graphreport")
                 {
                     XmlNode newFolder = this.AddCompNode(destParent, "Folder", XmlUtilities.NameAttr(compNode));
                     this.AddChildComponents(compNode, newFolder);
