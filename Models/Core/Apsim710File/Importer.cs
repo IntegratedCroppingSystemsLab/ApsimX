@@ -861,7 +861,7 @@
                 else if (string.Compare(varText, "FlowWeighted") == 0)
                     variableNames.Add("[SWIM].SubsurfaceDrainNO3 / ([SWIM].SubsurfaceDrain + 0.00001)"); // TODO : verify epsilon is OK here
                 else if (string.Compare(varText, "fom_c()") == 0)
-                    variableNames.Add("sum([Coil].Nutrient.FOM.C) as fom_c");
+                    variableNames.Add("sum([Soil].Nutrient.FOM.C) as fom_c");
                 //else if (string.Compare(varText, "H20FlowB120cm") == 0)
                 //    variableNames.Add("unknown");
                 else if (string.Compare(varText, "hum_c()") == 0)
