@@ -1246,9 +1246,6 @@
 
                             string newtype;
                             this.fertilisers.TryGetValue(type, out newtype);
-                            
-                            if (newtype == null || newtype.Length == 0)
-                                newtype = "UreaN";
 
                             type = "Fertiliser.Types." + newtype;
                             this.FindTokenValue("depth", childText, ref depth);
