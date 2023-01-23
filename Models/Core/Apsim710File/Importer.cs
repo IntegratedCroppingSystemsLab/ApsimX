@@ -805,7 +805,7 @@
                 string varText = var.InnerText;
 
                 if (varText.Contains("yyyy"))
-                    variableNames.Add("[Clock].Today");
+                    variableNames.Add("[Clock].Today as Date");
                 else if (string.Compare(varText, "day") == 0)
                     variableNames.Add("[Clock].Today.DayOfYear as day");
                 else if (string.Compare(varText, "AnnualBiomass") == 0)
