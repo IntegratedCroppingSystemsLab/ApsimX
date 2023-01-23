@@ -115,6 +115,7 @@
             this.fertilisers.Add("DAP", "DAP");
             this.fertilisers.Add("MAP", "MAP");
             this.fertilisers.Add("urea_N", "UreaN");
+            this.fertilisers.Add("UAN_N", "UAN_N");
             this.fertilisers.Add("urea_no3", "UreaNO3");
             this.fertilisers.Add("urea", "Urea");
             this.fertilisers.Add("nh4so4_n", "NH4SO4N");
@@ -650,10 +651,18 @@
                 Console.WriteLine(XmlUtilities.Serialise(xNode, false));
 
                 if (xNode != null)
-                    this.AddCompNode(series, "XFieldName", xNode.InnerText);
+                {
+                    XmlNode xn = destParent.OwnerDocument.CreateElement("XFieldName");
+                    xn.InnerText = xNode.InnerText;
+                    series.AppendChild(xn);
+                }
 
                 if (yNode != null)
-                    this.AddCompNode(series, "YFieldName", yNode.InnerText);
+                {
+                    XmlNode yn = destParent.OwnerDocument.CreateElement("YFieldName");
+                    yn.InnerText = yNode.InnerText;
+                    series.AppendChild(yn);
+                }
 
                 //Console.WriteLine(XmlUtilities.Serialise(series, false));
 
@@ -799,6 +808,84 @@
                     variableNames.Add("[Clock].Today");
                 else if (string.Compare(varText, "day") == 0)
                     variableNames.Add("[Clock].Today.DayOfYear as day");
+                else if (string.Compare(varText, "AnnualBiomass") == 0)
+                    variableNames.Add("max of ([Maize].AboveGround.Wt + [Soybean].AboveGround.Wt) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualBiomass");
+                else if (string.Compare(varText, "AnnualDnit") == 0)
+                    variableNames.Add("sum of sum([Soil].Nutrient.DenitrifiedN) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualDenitrif");
+                else if (string.Compare(varText, "AnnualDrain") == 0)
+                    variableNames.Add("sum of [SWIM].Drainage from [Clock].StartOfYear to [Clock].EndOfYear as AnnualDrain");
+                //else if (string.Compare(varText, "AnnualET") == 0)
+                //  variableNames.Add("sum of ([Maize].Leaf.Transpiration + [Soybean].Leaf.Transpiration) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualET")
+                //else if (string.Compare(varText, "AnnualGrossMiner") == 0)
+                //    variableNames.Add("unknown");
+                //else if (string.Compare(varText, "AnnualNetMiner") == 0)
+                //    variableNames.Add("diff of sum([Soil].NO3.kgha + [Soil].NH4.kgha + [Soil].Urea.kgha) from [Clock].StartOfSimulation to [Clock].EndOfDay as AnnualNetMiner");
+                //else if (string.Compare(varText, "AnnualNetMiner") == 0)
+                //    variableNames.Add("diff of sum([Soil].NO3.kgha + [Soil].NH4.kgha + [Soil].Urea.kgha) from [Clock].StartOfSimulation to [Clock].EndOfDay as AnnualNetMiner");
+                else if (string.Compare(varText, "AnnualRain") == 0)
+                    variableNames.Add("sum of [Weather].Rain from [Clock].StartOfYear to [Clock].EndOfYear as AnnualRain");
+                else if (string.Compare(varText, "AnnualRootD") == 0)
+                    variableNames.Add("max of ([Maize].Root.Depth + [Soybean].Root.Depth) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualRootD");
+                //else if (string.Compare(varText, "AnnualRunoff") == 0)
+                //    variableNames.Add("sum of [Soil].Water.Runoff from [Clock].StartOfYear to [Clock].EndOfYear as AnnualRunoff");
+                else if (string.Compare(varText, "AnnualTileDrainage") == 0)
+                    variableNames.Add("sum of [SWIM].SubsurfaceDrain from [Clock].StartOfYear to [Clock].EndOfYear as AnnualTileDrainage");
+                else if (string.Compare(varText, "AnnualTileNleaching") == 0)
+                    variableNames.Add("sum of [SWIM].SubsurfaceDrainNO3 from [Clock].StartOfYear to [Clock].EndOfYear as AnnualTileDrainage");
+                else if (string.Compare(varText, "AnnualWT") == 0)
+                    variableNames.Add("avg of [Soil].Water.DepthWetSoil from [Clock].StartOfYear to [Clock].EndOfYear as AnnualWT");
+                /*else if (string.Compare(varText, "ave_soil_temp(2) as st_5") == 0)
+                    variableNames.Add("[Soil].Temperature[2] as ");
+                else if (string.Compare(varText, "ave_soil_temp(3) as st_10") == 0)
+                    variableNames.Add("[Soil].Temperature[3] as ave_soil_temp3");
+                else if (string.Compare(varText, "ave_soil_temp(4) as st_15") == 0)
+                    variableNames.Add("[Soil].Temperature[4] as ave_soil_temp4");
+                else if (string.Compare(varText, "ave_soil_temp(5)") == 0)
+                    variableNames.Add("[Soil].Temperature[5] as ave_soil_temp5");
+                else if (string.Compare(varText, "ave_soil_temp(6)") == 0)
+                    variableNames.Add("[Soil].Temperature[6] as ave_soil_temp6");
+                else if (string.Compare(varText, "ave_soil_temp(7)") == 0)
+                    variableNames.Add("[Soil].Temperature[7] as ave_soil_temp7");
+                else if (string.Compare(varText, "ave_soil_temp(7)") == 0)
+                    variableNames.Add("[Soil].Temperature[7] as ave_soil_temp7");*/
+                else if (string.Compare(varText, "Biomass_crop") == 0)
+                    variableNames.Add("([Maize].AboveGround.Wt + [Soybean].AboveGround.Wt as Biomass_crop");
+                else if (string.Compare(varText, "BiomassG_crop") == 0)
+                    variableNames.Add("([Maize].Live.Wt + [Soybean].Live.Wt as BiomassG_crop");
+                else if (string.Compare(varText, "BiomassN_crop") == 0)
+                    variableNames.Add("([Maize].N.Wt + [Soybean].N.Wt as BiomassN_crop");
+                else if (string.Compare(varText, "biom_c") == 0)
+                    variableNames.Add("sum([Soil].Microbial.C) as biom_c");
+                else if (string.Compare(varText, "crop_buac") == 0)
+                    variableNames.Add("([Maize].Grain.Wt * 10 * 0.0159/0.85 + [Soybean].Grain.Wt * 10 * 0.0149 / 0.87) as crop_buac");
+                else if (string.Compare(varText, "FlowWeighted") == 0)
+                    variableNames.Add("[SWIM].SubsurfaceDrainNO3 / ([SWIM].SubsurfaceDrain + 0.00001)"); // TODO : verify epsilon is OK here
+                else if (string.Compare(varText, "fom_c()") == 0)
+                    variableNames.Add("sum([Coil].Nutrient.FOM.C) as fom_c");
+                //else if (string.Compare(varText, "H20FlowB120cm") == 0)
+                //    variableNames.Add("unknown");
+                else if (string.Compare(varText, "hum_c()") == 0)
+                    variableNames.Add("sum([Soil].Nutrient.Humic.C) as hum_c");
+                //else if (string.compare(vartext, "InSeason_Radiation") == 0)
+                //    variablenames.add("unknown");
+                else if (string.Compare(varText, "Jan1_biom_c") == 0)
+                    variableNames.Add("sum of [Soil].Nutrient.Microbial.C from [Clock].StartOfYear to [Clock].StartOfYear as Jan1_biom_c");
+                else if (string.Compare(varText, "Jan1_residue") == 0)
+                    variableNames.Add("sum of [SurfaceOrganicMatter].Wt from [Clock].StartOfYear to [Clock].StartOfYear as Jan1_residue");
+                else if (string.Compare(varText, "LAI_crop") == 0)
+                    variableNames.Add("[Maize].LAI + [Soybean].LAI as LAI_crop");
+                //else if (string.compare(vartext, "nfact_grain_crop") == 0)
+                //    variablenames.add("unknown");
+                else if (string.Compare(varText, "NfertApplied") == 0)
+                    variableNames.Add("[Fertiliser].NitrogenApplied as NfertApplied");
+                /*else if (string.compare(vartext, "Ngross_0_30cm") == 0)
+                    variablenames.add("unknown");
+                else if (string.compare(vartext, "Ngross_30_60") == 0)
+                    variablenames.add("unknown");
+                else if (string.compare(vartext, "Ngross_profile") == 0)
+                    variablenames.add("unknown");*/
+                else if (string.Compare(varText, "NfertApplied") == 0)
+                    variableNames.Add("[Fertiliser].NitrogenApplied as NfertApplied");
                 else
                     variableNames.Add("//" + varText);
             }
