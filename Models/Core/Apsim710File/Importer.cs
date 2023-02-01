@@ -641,6 +641,7 @@
             {
                 Console.WriteLine(XmlUtilities.Serialise(plot, false));
                 XmlNode series = destParent.OwnerDocument.CreateElement("Series");
+                bool isSimulated = false;
 
                 if (string.Compare(XmlUtilities.NameAttr(plot), "M") == 0)
                 {
@@ -689,6 +690,8 @@
                     tmpNode = destParent.OwnerDocument.CreateElement("ColourARGB");
                     tmpNode.InnerText = "-16747854";
                     series.AppendChild(tmpNode);
+
+                    isSimulated = true;
                 }
 
                 XmlUtilities.SetNameAttr(series, XmlUtilities.NameAttr(plot));
@@ -712,6 +715,48 @@
                     yn.InnerText = yNode.InnerText.Replace("()", "");
 
                     series.AppendChild(yn);
+                }
+
+                if (xNode != null && yNode != null && isSimulated)
+                {
+                    XmlNode classic = destParent.OwnerDocument.CreateElement("Series");
+                    XmlUtilities.SetNameAttr(classic, "Classic");
+
+                    // For all sim plots, add another classic plot
+                    XmlNode xn = destParent.OwnerDocument.CreateElement("XFieldName");
+                    XmlNode yn = destParent.OwnerDocument.CreateElement("YFieldName");
+
+                    xn.InnerText = xNode.InnerText;
+                    yn.InnerText = yNode.InnerText;
+
+                    classic.AppendChild(xn);
+                    classic.AppendChild(yn);
+
+                    XmlNode tmpNode = destParent.OwnerDocument.CreateElement("TableName");
+                    tmpNode.InnerText = "Classic";
+                    classic.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Type");
+                    tmpNode.InnerText = "1";
+                    classic.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Marker");
+                    tmpNode.InnerText = "11";
+                    classic.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Enabled");
+                    tmpNode.InnerText = "false";
+                    classic.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Line");
+                    tmpNode.InnerText = "0";
+                    classic.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("ColourARGB");
+                    tmpNode.InnerText = "-16736653";
+                    classic.AppendChild(tmpNode);
+
+                    newNode.AppendChild(classic);
                 }
 
                 //Console.WriteLine(XmlUtilities.Serialise(series, false));
