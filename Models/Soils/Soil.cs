@@ -248,7 +248,13 @@
                     else if (MathUtilities.GreaterThan(physical.SAT[layer], max_sw, 3))
                     {
                         double max_bd = (1.0 - physical.SAT[layer]) * specific_bd;
-                        message.AppendLine($"Saturation of {physical.SAT[layer].ToString("f3")} in layer {layerNumber} is above acceptable value of {max_sw.ToString("f3")}. You must adjust bulk density to below {max_bd.ToString("f3")} OR saturation to below {max_sw.ToString("f3")}");
+
+
+                        // TODO: this needs removing, just placing this for convienence custom-conversions
+                        physical.SAT[layer] = max_sw;
+
+
+                        //message.AppendLine($"Saturation of {physical.SAT[layer].ToString("f3")} in layer {layerNumber} is above acceptable value of {max_sw.ToString("f3")}. You must adjust bulk density to below {max_bd.ToString("f3")} OR saturation to below {max_sw.ToString("f3")}");
                     }
 
                     if (physical.BD[layer] == MathUtilities.MissingValue || double.IsNaN(physical.BD[layer]))
