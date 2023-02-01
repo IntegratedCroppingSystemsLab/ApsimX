@@ -276,7 +276,7 @@
                     this.AddChildComponents(compNode, newSim);
                     AddCompNode(newSim, "SoilArbitrator", "SoilArbitrator");
                 }
-                else if (compNode.Name == "folder")
+                else if (compNode.Name == "folder" || compNode.Name == "GraphReport")
                 {
                     XmlNode newFolder = this.AddCompNode(destParent, "Folder", XmlUtilities.NameAttr(compNode));
                     this.AddChildComponents(compNode, newFolder);
@@ -800,92 +800,111 @@
             List<XmlNode> nodes = new List<XmlNode>();
             XmlUtilities.FindAllRecursively(compNode, "variable", ref nodes);
             List<string> variableNames = new List<string>();
+
+            var table = new Dictionary<string, string>()
+            {
+                ["day"] = "[Clock].Today.DayOfYear as day",
+                ["NO3_0_30cm"] = "sum([Soil].NO3.AmountInSolution[1:5]) as NO3_0_30cm",
+                ["NO3_30_60cm"] = "sum([Soil].NO3.AmountInSolution[6:7]) as NO3_30_60cm",
+                ["NO3_0_120cm"] = "sum([Soil].NO3.AmountInSolution[1:10]) as NO3_0_120cm",
+                ["NO3_profile"] = "sum([Soil].NO3.AmountInSolution) as NO3_profile",
+                ["NH4_0_30cm"] = "sum([Soil].NH4.AmountInSolution[1:5]) as NH4_0_30cm",
+                ["NH4_30_60cm"] = "sum([Soil].NH4.AmountInSolution[6:7]) as NH4_30_60cm",
+                ["NH4_0_120cm"] = "sum([Soil].NH4.AmountInSolution[1:10]) as NH4_0_120cm",
+                ["NH4_profile"] = "sum([Soil].NH4.AmountInSolution[1:10]) as NH4_profile",
+                ["dnit_0_30cm"] = "sum([Soil].Nutrient.DenitrifiedN[1:5]) as dnit_0_30cm",
+                ["dnit_30_60cm"] = "sum([Soil].Nutrient.DenitrifiedN[6:7]) as dnit_30_60cm",
+                ["dnit_profile"] = "sum([Soil].Nutrient.DenitrifiedN) as dnit_profile",
+                ["Nnet_0_30cm"] = "sum([Nutrient].MineralisedN[1:5]) as Nnet_0_30cm",
+                ["Nnet_30_60cm"] = "sum([Nutrient].MineralisedN[6:7]) as Nnet_30_60cm",
+                ["Nnet_profile"] = "sum([Nutrient].MineralisedN) as Nnet_profile",
+                ["ST_15cm"] = "[Soil].Temperature[4] as ST_15cm",
+                ["ST_45cm"] = "0.5 * sum([Soil].Temperature[6:7]) as ST_45cm",
+                ["ST_125cm"] = "0.5 * sum([Soil].Temperature[10:11]) as ST_125cm",
+                ["SW15cm"] = "[Swim].Swmm[4] as SW15cm",
+                ["DUL15cm"] = "[Soil].Physical.DUL[4] as DUL15cm",
+                ["LL15cm"] = "[Soil].Physical.LL15[4] as LL15cm",
+                ["SAT15cm"] = "[Soil].Physical.SAT[4] as SAT15cm",
+                ["SW45cm"] = "0.5 * sum([Swim].Swmm[6:7]) as SW45cm",
+                ["DUL45cm"] = "0.5 * sum([Soil].Physical.DUL[6:7]) as DUL45cm",
+                ["LL45cm"] = "0.5 * sum([Soil].Physical.LL15[6:7]) as LL45cm",
+                ["SAT45cm"] = "0.5 * sum([Soil].Physical.SAT[6:7]) as SAT45cm",
+                ["SW95cm"] = "[Swim].Swmm[10] as SW95cm",
+                ["SW135cm"] = "[Swim].Swmm[12] as SW135cm",
+                ["watertable"] = "[Swim].WaterTable as watertable",
+                ["drain"] = "[Swim].Drainage as drain",
+                ["fom_c()"] = "sum([Soil].Nutrient.FOM.C) as fom_c",
+                ["biom_c()"] = "sum([Soil].Nutrient.Microbial.C) as biom_c",
+                ["hum_c()"] = "sum([Soil].Nutrient.Humic.C) as hum_c",
+                ["tile_flow_sum"] = "sum of [Swim].SubsurfaceDrain from [Clock].StartOfYear to [Clock].EndOfYear as tile_flow_sum",
+                ["tile_no3_sum"] = "sum of [Swim].SubsurfaceDrainNO3 from [Clock].StartOfYear to [Clock].EndOfYear as tile_no3_sum",
+                ["tile_ncon"] = "divide(tile_no3_sum, tile_flow_sum, 0.0)*100 as tile_ncon",
+                ["subsurface_drain_no3 as tile_flow"] = "[Swim].SubsurfaceDrain as tile_flow",
+                ["subsurface_drain_no3 as tile_no3"] = "[Swim].SubsurfaceDrainNO3 as tile_no3",
+                ["crop_buac"] = "([Maize].Grain.Wt * 10 * 0.0159/0.85 + [Soybean].Grain.Wt * 10 * 0.0149 / 0.87) as crop_buac",
+                ["LAI_crop"] = "[Maize].LAI + [Soybean].LAI as LAI_crop",
+                ["Biomass_crop"] = "([Maize].AboveGround.Wt + [Soybean].AboveGround.Wt) * 10 as Biomass_crop",
+                ["Yield_crop"] = "([Maize].Grain.Wt + [Soybean].AboveGround.Wt) * 10 as Yield_crop",
+                ["Stover_crop"] = "(Biomass_crop - Yield_crop) as Stover_crop",
+                ["BiomassN_crop"] = "[Maize].AboveGround.N + [Soybean].AboveGround.N as BiomassN_crop",
+                ["YieldN_crop"] = "[Maize].Grain.N + [Soybean].AboveGround.N as YieldN_crop",
+                ["StoverN_crop"] = "(BiomassN_crop - YieldN_crop) as StoverN_crop",
+                ["GrainSize_crop"] = "[Maize].Grain.Size + [Soybean].Grain.Size as GrainSize_crop",
+                ["Fruit_soy"] = "[Soybean].Pod.Wt * 10 as Fruit_soy",
+                ["FruitN_soy"] = "[Soybean].Pod.N * 10 as FruitN_soy",
+                ["StoverCN_crop"] = "divide(Stover_crop * 0.4, StoverN_crop, 0.0) as StoverCN_crop",
+                ["RootMass_crop"] = "10 * ([Maize].Root.Wt + [Soybean].Root.Wt) as RootMass_crop",
+                ["RootNconc_crop"] = "[Maize].Root.Nconc + [Soybean].Root.Nconc as RootNconc_crop",
+                ["RootN_crop"] = "10 * ([Maize].Root.N + [Soybean].Root.N) as RootN_crop",
+                ["Root_in"] = "[Maize].Root.Depth + [Soybean].Root.Depth as Root_in",
+                ["BiomassG_crop"] = "[Maize].AboveGroundLive.Wt + [Soybean].AboveGroundLive.Wt as BiomassG_crop",
+                ["Leaf_pot"] = "[Maize].Leaf.AppearedCohortNo as Leaf_pot",
+                ["LeafNode"] = "[Maize].Leaf.AppearedCohortNo - [Maize].Leaf.DeadCohortNo + [Soybean].Leaf.NodeNumber.Value() as LeafNode",
+                ["PlantNo"] = "[Maize].Population + [Soybean].Population as PlantNo",
+                ["Soy_seedsize"] = "[Soybean].Grain.Size as Soy_seedsize",
+                ["soybean.node_no as SoyNodes"] = "[Soybean].Leaf.NodeNumber.Value() as SoyNodes",
+                ["maize.biomass as CornBiom"] = "[Maize].AboveGround.Wt * 10 as CornBiom",
+                ["maize.yield as CornYield"] = "[Maize].Grain.Wt * 10 as CornYield",
+                ["maize.lai as CornLAI"] = "[Maize].LAI as CornLAI",
+                ["CornNupt"] = "[Maize].AboveGround.N * 10 as CornNupt",
+                ["soybean.biomass as SoyBiom"] = "[Soybean].AboveGround.Wt * 10 as SoyBiom",
+                ["soybean.lai as SoyLAI"] = "[Soybean].LAI as SoyLAI",
+                ["SoyNupt"] = "[Soybean].AboveGround.N * 10 as SoyNupt",
+                ["surfaceom_wt"] = "[SurfaceOrganicMatter].Wt as surfaceom_wt",
+                ["surfaceom_c"] = "[SurfaceOrganicMatter].C as surfaceom_c",
+                ["surfaceom_n"] = "[SurfaceOrganicMatter].N as surfaceom_n",
+                ["surfaceom_cover"] = "[SurfaceOrganicMatter].Cover as surfaceom_cover",
+                ["residueCN"] = "divide(surfaceom_c, surfaceom_n, 0.0) as residueCN",
+                ["year"] = "[Clock].Today.Year as year",
+                ["AnnualRunoff"] = "sum of [Swim].Runoff from [Clock].StartOfYear to [Clock].EndOfYear as AnnualRunoff",
+                ["AnnualRain"] = "sum of [Weather].Rain from [Clock].StartOfYear to [Clock].EndOfYear as AnnualRain",
+                ["AnnualDnit"] = "sum of sum([Soil].Nutrient.DenitrifiedN) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualDnit",
+                ["AnnualNetMiner"] = "sum of sum([Soil].Nutrient.MineralisedN) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualNetMiner",
+                ["AnnualDrain"] = "sum of [SWIM].Drainage from [Clock].StartOfYear to [Clock].EndOfYear as AnnualDrain",
+                ["InSeason_Radiation"] = "sum of [Weather].Radn from [Plant].Sowing to [Plant].Harvesting as InSeason_Radiation",
+                ["ET_annual"] = "sum of ([Swim].Es + [Maize].Leaf.Transpiration + [Soybean].Leaf.Transpiration) from [Clock].StartOfYear to [Clock].EndOfYear as ET_annual",
+                ["T_annual"] = "sum of ([Maize].Leaf.Transpiration + [Soybean].Leaf.Transpiration) from [Clock].StartOfYear to [Clock].EndOfYear as T_annual",
+                ["H20FlowB120cm"] = "sum of [Swim].Flow[11] from [Clock].StartOfYear to [Clock].EndOfYear as H20FlowB120cm",
+                ["NO3FlowB120cm"] = "sum of [Swim].FlowNO3[11] from [Clock].StartOfYear to [Clock].EndOfYear as NO3FlowB120cm",
+                // TODO:
+                // Ngross_30_cm, Ngross_60_cm, Ngross_profile, AnnualGrossMiner. NG does not appear to have NGross.
+                // GrainsPots. Not sure how to get pods for soybean.
+                // oxdef_photo_crop, oxdef_fix_s. Both unimplemented.
+                // swdef_expan_crop, swdef_fixation_s. Don't know how to do NG stresses.
+                // nfact_grain_crop, temp_RUE_crop, low_rad_crop, low_mint_crop. All need conditionals
+                // SoyPods. See GrainPots.
+                // SoyLeaves. SimpleLeaf doesn't appear to have leaf number.
+                // SoyFixN. Not sure how to track fixation in NG.
+                // TileWaterAnnual, TileNitrateAnnual, root_crop. All undefined.
+            };
             foreach (XmlNode var in nodes)
             {
                 string varText = var.InnerText;
 
                 if (varText.Contains("yyyy"))
-                    variableNames.Add("[Clock].Today");
-                else if (string.Compare(varText, "day") == 0)
-                    variableNames.Add("[Clock].Today.DayOfYear as day");
-                else if (string.Compare(varText, "AnnualBiomass") == 0)
-                    variableNames.Add("max of ([Maize].AboveGround.Wt + [Soybean].AboveGround.Wt) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualBiomass");
-                else if (string.Compare(varText, "AnnualDnit") == 0)
-                    variableNames.Add("sum of sum([Soil].Nutrient.DenitrifiedN) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualDenitrif");
-                else if (string.Compare(varText, "AnnualDrain") == 0)
-                    variableNames.Add("sum of [SWIM].Drainage from [Clock].StartOfYear to [Clock].EndOfYear as AnnualDrain");
-                //else if (string.Compare(varText, "AnnualET") == 0)
-                //  variableNames.Add("sum of ([Maize].Leaf.Transpiration + [Soybean].Leaf.Transpiration) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualET")
-                //else if (string.Compare(varText, "AnnualGrossMiner") == 0)
-                //    variableNames.Add("unknown");
-                //else if (string.Compare(varText, "AnnualNetMiner") == 0)
-                //    variableNames.Add("diff of sum([Soil].NO3.kgha + [Soil].NH4.kgha + [Soil].Urea.kgha) from [Clock].StartOfSimulation to [Clock].EndOfDay as AnnualNetMiner");
-                //else if (string.Compare(varText, "AnnualNetMiner") == 0)
-                //    variableNames.Add("diff of sum([Soil].NO3.kgha + [Soil].NH4.kgha + [Soil].Urea.kgha) from [Clock].StartOfSimulation to [Clock].EndOfDay as AnnualNetMiner");
-                else if (string.Compare(varText, "AnnualRain") == 0)
-                    variableNames.Add("sum of [Weather].Rain from [Clock].StartOfYear to [Clock].EndOfYear as AnnualRain");
-                else if (string.Compare(varText, "AnnualRootD") == 0)
-                    variableNames.Add("max of ([Maize].Root.Depth + [Soybean].Root.Depth) from [Clock].StartOfYear to [Clock].EndOfYear as AnnualRootD");
-                //else if (string.Compare(varText, "AnnualRunoff") == 0)
-                //    variableNames.Add("sum of [Soil].Water.Runoff from [Clock].StartOfYear to [Clock].EndOfYear as AnnualRunoff");
-                else if (string.Compare(varText, "AnnualTileDrainage") == 0)
-                    variableNames.Add("sum of [SWIM].SubsurfaceDrain from [Clock].StartOfYear to [Clock].EndOfYear as AnnualTileDrainage");
-                else if (string.Compare(varText, "AnnualTileNleaching") == 0)
-                    variableNames.Add("sum of [SWIM].SubsurfaceDrainNO3 from [Clock].StartOfYear to [Clock].EndOfYear as AnnualTileDrainage");
-                else if (string.Compare(varText, "AnnualWT") == 0)
-                    variableNames.Add("avg of [Soil].Water.DepthWetSoil from [Clock].StartOfYear to [Clock].EndOfYear as AnnualWT");
-                /*else if (string.Compare(varText, "ave_soil_temp(2) as st_5") == 0)
-                    variableNames.Add("[Soil].Temperature[2] as ");
-                else if (string.Compare(varText, "ave_soil_temp(3) as st_10") == 0)
-                    variableNames.Add("[Soil].Temperature[3] as ave_soil_temp3");
-                else if (string.Compare(varText, "ave_soil_temp(4) as st_15") == 0)
-                    variableNames.Add("[Soil].Temperature[4] as ave_soil_temp4");
-                else if (string.Compare(varText, "ave_soil_temp(5)") == 0)
-                    variableNames.Add("[Soil].Temperature[5] as ave_soil_temp5");
-                else if (string.Compare(varText, "ave_soil_temp(6)") == 0)
-                    variableNames.Add("[Soil].Temperature[6] as ave_soil_temp6");
-                else if (string.Compare(varText, "ave_soil_temp(7)") == 0)
-                    variableNames.Add("[Soil].Temperature[7] as ave_soil_temp7");
-                else if (string.Compare(varText, "ave_soil_temp(7)") == 0)
-                    variableNames.Add("[Soil].Temperature[7] as ave_soil_temp7");*/
-                else if (string.Compare(varText, "Biomass_crop") == 0)
-                    variableNames.Add("([Maize].AboveGround.Wt + [Soybean].AboveGround.Wt as Biomass_crop");
-                else if (string.Compare(varText, "BiomassG_crop") == 0)
-                    variableNames.Add("([Maize].Live.Wt + [Soybean].Live.Wt as BiomassG_crop");
-                else if (string.Compare(varText, "BiomassN_crop") == 0)
-                    variableNames.Add("([Maize].N.Wt + [Soybean].N.Wt as BiomassN_crop");
-                else if (string.Compare(varText, "biom_c") == 0)
-                    variableNames.Add("sum([Soil].Microbial.C) as biom_c");
-                else if (string.Compare(varText, "crop_buac") == 0)
-                    variableNames.Add("([Maize].Grain.Wt * 10 * 0.0159/0.85 + [Soybean].Grain.Wt * 10 * 0.0149 / 0.87) as crop_buac");
-                else if (string.Compare(varText, "FlowWeighted") == 0)
-                    variableNames.Add("[SWIM].SubsurfaceDrainNO3 / ([SWIM].SubsurfaceDrain + 0.00001)"); // TODO : verify epsilon is OK here
-                else if (string.Compare(varText, "fom_c()") == 0)
-                    variableNames.Add("sum([Coil].Nutrient.FOM.C) as fom_c");
-                //else if (string.Compare(varText, "H20FlowB120cm") == 0)
-                //    variableNames.Add("unknown");
-                else if (string.Compare(varText, "hum_c()") == 0)
-                    variableNames.Add("sum([Soil].Nutrient.Humic.C) as hum_c");
-                //else if (string.compare(vartext, "InSeason_Radiation") == 0)
-                //    variablenames.add("unknown");
-                else if (string.Compare(varText, "Jan1_biom_c") == 0)
-                    variableNames.Add("sum of [Soil].Nutrient.Microbial.C from [Clock].StartOfYear to [Clock].StartOfYear as Jan1_biom_c");
-                else if (string.Compare(varText, "Jan1_residue") == 0)
-                    variableNames.Add("sum of [SurfaceOrganicMatter].Wt from [Clock].StartOfYear to [Clock].StartOfYear as Jan1_residue");
-                else if (string.Compare(varText, "LAI_crop") == 0)
-                    variableNames.Add("[Maize].LAI + [Soybean].LAI as LAI_crop");
-                //else if (string.compare(vartext, "nfact_grain_crop") == 0)
-                //    variablenames.add("unknown");
-                else if (string.Compare(varText, "NfertApplied") == 0)
-                    variableNames.Add("[Fertiliser].NitrogenApplied as NfertApplied");
-                /*else if (string.compare(vartext, "Ngross_0_30cm") == 0)
-                    variablenames.add("unknown");
-                else if (string.compare(vartext, "Ngross_30_60") == 0)
-                    variablenames.add("unknown");
-                else if (string.compare(vartext, "Ngross_profile") == 0)
-                    variablenames.add("unknown");*/
-                else if (string.Compare(varText, "NfertApplied") == 0)
-                    variableNames.Add("[Fertiliser].NitrogenApplied as NfertApplied");
+                    variableNames.Add("[Clock].Today as Date");
+                else if (table.ContainsKey(varText))
+                    variableNames.Add(table[varText]);
                 else
                     variableNames.Add("//" + varText);
             }
