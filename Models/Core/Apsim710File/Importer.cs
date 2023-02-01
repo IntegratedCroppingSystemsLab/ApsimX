@@ -709,7 +709,7 @@
                 if (yNode != null)
                 {
                     XmlNode yn = destParent.OwnerDocument.CreateElement("YFieldName");
-                    yn.InnerText = yNode.InnerText;
+                    yn.InnerText = yNode.InnerText.Replace("()", "");
 
                     series.AppendChild(yn);
                 }
