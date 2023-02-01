@@ -710,6 +710,7 @@
                 {
                     XmlNode yn = destParent.OwnerDocument.CreateElement("YFieldName");
                     yn.InnerText = yNode.InnerText;
+
                     series.AppendChild(yn);
                 }
 
@@ -1706,7 +1707,31 @@
         /// <param name="newSim">The new simulation xml node.</param>
         private void AddDataStore(XmlNode newSim)
         {
-            this.AddCompNode(newSim, "DataStore", "DataStore");
+            XmlNode ds = this.AddCompNode(newSim, "DataStore", "DataStore");
+
+            // Add classic sim input
+            XmlNode input = ds.OwnerDocument.CreateElement("Input");
+            XmlNode fileNames = ds.OwnerDocument.CreateElement("FileNames");
+            XmlNode source = ds.OwnerDocument.CreateElement("File");
+
+            XmlUtilities.SetNameAttr(input, "Classic");
+            source.InnerText = "classic.txt";
+
+            fileNames.AppendChild(source);
+            input.AppendChild(fileNames);
+            ds.AppendChild(input);
+
+            // Add measured input
+            input = ds.OwnerDocument.CreateElement("Input");
+            fileNames = ds.OwnerDocument.CreateElement("FileNames");
+            source = ds.OwnerDocument.CreateElement("File");
+
+            XmlUtilities.SetNameAttr(input, "Measured");
+            source.InnerText = "measured.txt";
+
+            fileNames.AppendChild(source);
+            input.AppendChild(fileNames);
+            ds.AppendChild(input);
         }
 
         /// <summary>
