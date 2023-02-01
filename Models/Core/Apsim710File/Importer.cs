@@ -642,6 +642,55 @@
                 Console.WriteLine(XmlUtilities.Serialise(plot, false));
                 XmlNode series = destParent.OwnerDocument.CreateElement("Series");
 
+                if (string.Compare(XmlUtilities.NameAttr(plot), "M") == 0)
+                {
+                    XmlNode tmpNode = destParent.OwnerDocument.CreateElement("TableName");
+                    tmpNode.InnerText = "Measured";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Type");
+                    tmpNode.InnerText = "1";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Marker");
+                    tmpNode.InnerText = "0";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("MarkerSize");
+                    tmpNode.InnerText = "1";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Line");
+                    tmpNode.InnerText = "4";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("ColourARGB");
+                    tmpNode.InnerText = "-2793984";
+                    series.AppendChild(tmpNode);
+                }
+                else if (string.Compare(XmlUtilities.NameAttr(plot), "S") == 0)
+                {
+                    XmlNode tmpNode = destParent.OwnerDocument.CreateElement("TableName");
+                    tmpNode.InnerText = "Outputfile";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Type");
+                    tmpNode.InnerText = "1";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Marker");
+                    tmpNode.InnerText = "11";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("Line");
+                    tmpNode.InnerText = "0";
+                    series.AppendChild(tmpNode);
+
+                    tmpNode = destParent.OwnerDocument.CreateElement("ColourARGB");
+                    tmpNode.InnerText = "-16747854";
+                    series.AppendChild(tmpNode);
+                }
+
                 XmlUtilities.SetNameAttr(series, XmlUtilities.NameAttr(plot));
 
                 XmlNode xNode = XmlUtilities.FindByType(plot, "X");
