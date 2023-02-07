@@ -699,9 +699,6 @@
                 XmlNode xNode = XmlUtilities.FindByType(plot, "X");
                 XmlNode yNode = XmlUtilities.FindByType(plot, "Y");
 
-                Console.WriteLine("xNode");
-                Console.WriteLine(XmlUtilities.Serialise(xNode, false));
-
                 if (xNode != null)
                 {
                     XmlNode xn = destParent.OwnerDocument.CreateElement("XFieldName");
